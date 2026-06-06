@@ -54,9 +54,22 @@ public class OssFileSinkFactory extends BaseMultipleTableFileSinkFactory {
         return OptionRule.builder()
                 .required(FileBaseOptions.FILE_PATH)
                 .required(OssFileSinkOptions.BUCKET)
-                .required(OssFileSinkOptions.ACCESS_KEY)
-                .required(OssFileSinkOptions.ACCESS_SECRET)
                 .required(OssFileSinkOptions.ENDPOINT)
+                .optional(OssFileSinkOptions.ACCESS_KEY)
+                .optional(OssFileSinkOptions.ACCESS_SECRET)
+                .optional(OssFileSinkOptions.AUTH_MODE)
+                .optional(OssFileSinkOptions.ROLE_NAME)
+                .conditional(
+                        OssFileSinkOptions.AUTH_MODE,
+                        Arrays.asList(
+                                OssFileSinkOptions.AuthMode.SIMPLE,
+                                OssFileSinkOptions.AuthMode.STS_TOKEN),
+                        OssFileSinkOptions.ACCESS_KEY,
+                        OssFileSinkOptions.ACCESS_SECRET)
+                .conditional(
+                        OssFileSinkOptions.AUTH_MODE,
+                        OssFileSinkOptions.AuthMode.STS_TOKEN,
+                        OssFileSinkOptions.STS_TOKEN)
                 .optional(FileBaseSinkOptions.SCHEMA_SAVE_MODE)
                 .optional(FileBaseSinkOptions.DATA_SAVE_MODE)
                 .optional(FileBaseSinkOptions.FILE_FORMAT_TYPE)

@@ -190,8 +190,11 @@ schema {
 | bucket                     | string  | 是    | -                  | oss文件系统的bucket地址，例如：`oss://seatunnel-test`。                                                                                                          |
 | endpoint                   | string  | 是    | -                  | fs oss端点                                                                                                                                             |
 | read_columns               | list    | 否    | -                  | 数据源的读取列列表，用户可以使用它来实现字段投影。支持列投影的文件类型如下所示：`text` `csv` `parquet` `orc` `json` `excel` `xml`。如果用户想在读取`text` `json` `csv`文件时使用此功能，必须配置"schema"选项。        |
-| access_key                 | string  | 否    | -                  |                                                                                                                                                      |
-| access_secret              | string  | 否    | -                  |                                                                                                                                                      |
+| auth_mode                  | enum    | 否    | simple             | OSS 认证模式。支持 `simple`、`sts_token`、`env`、`role`。                                                                                                |
+| access_key                 | string  | 否    | -                  | OSS access key。`auth_mode` 为 `simple` 或 `sts_token` 时必填。                                                                                         |
+| access_secret              | string  | 否    | -                  | OSS access secret。`auth_mode` 为 `simple` 或 `sts_token` 时必填。                                                                                      |
+| sts_token                  | string  | 否    | -                  | OSS STS security token。`auth_mode` 为 `sts_token` 时必填。                                                                                             |
+| role_name                  | string  | 否    | -                  | 部署机器绑定的 RAM 角色名称。`auth_mode` 为 `role` 时使用；不配置时将从 ECS metadata 自动获取。                                                             |
 | delimiter                  | string  | 否    | \001               | 字段分隔符，用于告诉连接器在读取文本文件时如何切分字段。默认`\001`，与hive的默认分隔符相同。                                                                                                  |
 | row_delimiter              | string  | 否    | \n                 | 行分隔符，用于告诉连接器在读取文本文件时如何切分行。默认`\n`。                                                                                                                    |
 | parse_partition_from_path  | boolean | 否    | true               | 控制是否从文件路径解析分区键和值。例如，如果您从路径`oss://hadoop-cluster/tmp/seatunnel/parquet/name=tyrantlucifer/age=26`读取文件。文件中的每条记录数据都将添加这两个字段：name="tyrantlucifer"，age=16 |
@@ -216,6 +219,15 @@ schema {
 | file_filter_modified_end   | string  | 否    | -                  | 按照最后修改时间过滤文件。 要过滤的结束时间(不包括改时间),时间格式是：`yyyy-MM-dd HH:mm:ss`                                                                                           |
 | quote_char                 | string  | 否    | "                   | 用于包裹 CSV 字段的单字符，可保证包含逗号、换行符或引号的字段被正确解析。                                                                                                              |
 | escape_char                | string  | 否    | -                  | 用于在 CSV 字段内转义引号或其他特殊字符，使其不会结束字段。                                                                                                                     |
+
+### auth_mode [enum]
+
+OSS 认证模式。支持以下值：
+
+- `simple`：使用 `access_key` 和 `access_secret`。这是默认模式。
+- `sts_token`：使用 `access_key`、`access_secret` 和 `sts_token`。
+- `env`：从环境变量读取认证信息。配置 `OSS_ACCESS_KEY_ID`、`OSS_ACCESS_KEY_SECRET`，以及可选的 `OSS_SESSION_TOKEN`。
+- `role`：使用部署机器绑定的 RAM 角色免密访问。可以配置 `role_name`，不配置时将从 ECS metadata 自动获取角色名称。
 
 ### compress_codec [string]
 

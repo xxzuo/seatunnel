@@ -100,9 +100,12 @@ If write to `csv`, `text`, `json` file type, All column will be string.
 | path                                  | string  | yes      | The oss path to write file in.             |                                                                                                                                                                                 |
 | tmp_path                              | string  | no       | /tmp/seatunnel                             | The result file will write to a tmp path first and then use `mv` to submit tmp dir to target dir. Need a OSS dir.                                                               |
 | bucket                                | string  | yes      | -                                          |                                                                                                                                                                                 |
-| access_key                            | string  | yes      | -                                          |                                                                                                                                                                                 |
-| access_secret                         | string  | yes      | -                                          |                                                                                                                                                                                 |
 | endpoint                              | string  | yes      | -                                          |                                                                                                                                                                                 |
+| auth_mode                             | enum    | no       | simple                                     | OSS authentication mode. Supported values are `simple`, `sts_token`, `env`, and `role`.                                                                                       |
+| access_key                            | string  | no       | -                                          | OSS access key. Required when `auth_mode` is `simple` or `sts_token`.                                                                                                         |
+| access_secret                         | string  | no       | -                                          | OSS access secret. Required when `auth_mode` is `simple` or `sts_token`.                                                                                                      |
+| sts_token                             | string  | no       | -                                          | OSS STS security token. Required when `auth_mode` is `sts_token`.                                                                                                              |
+| role_name                             | string  | no       | -                                          | RAM role name bound to the deployment machine. Used when `auth_mode` is `role`. If not configured, the connector discovers it from ECS metadata.                                |
 | custom_filename                       | boolean | no       | false                                      | Whether you need custom the filename                                                                                                                                            |
 | file_name_expression                  | string  | no       | "${transactionId}"                         | Only used when custom_filename is true                                                                                                                                          |
 | filename_time_format                  | string  | no       | "yyyy.MM.dd"                               | Only used when custom_filename is true                                                                                                                                          |
@@ -152,6 +155,15 @@ The access key of oss file system.
 ### access_secret [string]
 
 The access secret of oss file system.
+
+### auth_mode [enum]
+
+OSS authentication mode. Supported values:
+
+- `simple`: Use `access_key` and `access_secret`. This is the default mode.
+- `sts_token`: Use `access_key`, `access_secret`, and `sts_token`.
+- `env`: Read credentials from environment variables. Configure `OSS_ACCESS_KEY_ID`, `OSS_ACCESS_KEY_SECRET`, and optional `OSS_SESSION_TOKEN`.
+- `role`: Use the RAM role bound to the deployment machine. Configure the role name with `role_name`, or leave it empty to discover the role name from ECS metadata.
 
 ### endpoint [string]
 

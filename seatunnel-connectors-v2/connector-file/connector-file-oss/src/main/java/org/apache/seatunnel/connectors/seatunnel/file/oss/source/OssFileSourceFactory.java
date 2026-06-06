@@ -58,6 +58,19 @@ public class OssFileSourceFactory implements TableSourceFactory {
                 .optional(OssFileSourceOptions.BUCKET)
                 .optional(OssFileSourceOptions.ACCESS_KEY)
                 .optional(OssFileSourceOptions.ACCESS_SECRET)
+                .optional(OssFileSourceOptions.AUTH_MODE)
+                .optional(OssFileSourceOptions.ROLE_NAME)
+                .conditional(
+                        OssFileSourceOptions.AUTH_MODE,
+                        Arrays.asList(
+                                OssFileSourceOptions.AuthMode.SIMPLE,
+                                OssFileSourceOptions.AuthMode.STS_TOKEN),
+                        OssFileSourceOptions.ACCESS_KEY,
+                        OssFileSourceOptions.ACCESS_SECRET)
+                .conditional(
+                        OssFileSourceOptions.AUTH_MODE,
+                        OssFileSourceOptions.AuthMode.STS_TOKEN,
+                        OssFileSourceOptions.STS_TOKEN)
                 .optional(OssFileSourceOptions.ENDPOINT)
                 .optional(FileBaseSourceOptions.FILE_FORMAT_TYPE)
                 .conditional(

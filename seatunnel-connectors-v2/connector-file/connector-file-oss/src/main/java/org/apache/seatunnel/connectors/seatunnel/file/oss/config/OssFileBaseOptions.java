@@ -32,8 +32,30 @@ public class OssFileBaseOptions extends FileBaseOptions {
                     .stringType()
                     .noDefaultValue()
                     .withDescription("OSS bucket access secret");
+    public static final Option<AuthMode> AUTH_MODE =
+            Options.key("auth_mode")
+                    .enumType(AuthMode.class)
+                    .defaultValue(AuthMode.SIMPLE)
+                    .withDescription("OSS authentication mode");
+    public static final Option<String> STS_TOKEN =
+            Options.key("sts_token")
+                    .stringType()
+                    .noDefaultValue()
+                    .withDescription("OSS STS security token");
+    public static final Option<String> ROLE_NAME =
+            Options.key("role_name")
+                    .stringType()
+                    .noDefaultValue()
+                    .withDescription("OSS RAM role name for ECS instance profile authentication");
     public static final Option<String> ENDPOINT =
             Options.key("endpoint").stringType().noDefaultValue().withDescription("OSS endpoint");
     public static final Option<String> BUCKET =
             Options.key("bucket").stringType().noDefaultValue().withDescription("OSS bucket");
+
+    public enum AuthMode {
+        SIMPLE,
+        STS_TOKEN,
+        ENV,
+        ROLE
+    }
 }

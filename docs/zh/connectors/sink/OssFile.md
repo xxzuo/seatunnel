@@ -102,8 +102,11 @@ import ChangeLog from '../changelog/connector-file-oss.md';
 | path                                  | string  | 是  | 写入文件的oss路径。                                |                                                                   |
 | tmp_path                              | string  | 否  | /tmp/seatunnel                             | 结果文件将首先写入tmp路径，然后使用`mv`将tmp-dir提交到目标dir。因此需要一个OSS目录。              |
 | bucket                                | string  | 是  | -                                          |                                                                   |
-| access_key                            | string  | 是  | -                                          |                                                                   |
-| access_secret                         | string  | 是  | -                                          |                                                                   |
+| auth_mode                             | enum    | 否  | simple                                     | OSS 认证模式。支持 `simple`、`sts_token`、`env`、`role`。 |
+| access_key                            | string  | 否  | -                                          | OSS access key。`auth_mode` 为 `simple` 或 `sts_token` 时必填。 |
+| access_secret                         | string  | 否  | -                                          | OSS access secret。`auth_mode` 为 `simple` 或 `sts_token` 时必填。 |
+| sts_token                             | string  | 否  | -                                          | OSS STS security token。`auth_mode` 为 `sts_token` 时必填。     |
+| role_name                             | string  | 否  | -                                          | 部署机器绑定的 RAM 角色名称。`auth_mode` 为 `role` 时使用；不配置时将从 ECS metadata 自动获取。 |
 | endpoint                              | string  | 是  | -                                          |                                                                   |
 | custom_filename                       | boolean | 否  | false                                      | 是否需要自定义文件名                                                        |
 | file_name_expression                  | string  | 否  | "${transactionId}"                         | 仅在custom_filename为true时使用                                         |
@@ -152,6 +155,15 @@ oss文件系统的access_key。
 ### access_secret [string]
 
 oss文件系统的access_secret。
+
+### auth_mode [enum]
+
+OSS 认证模式。支持以下值：
+
+- `simple`：使用 `access_key` 和 `access_secret`。这是默认模式。
+- `sts_token`：使用 `access_key`、`access_secret` 和 `sts_token`。
+- `env`：从环境变量读取认证信息。配置 `OSS_ACCESS_KEY_ID`、`OSS_ACCESS_KEY_SECRET`，以及可选的 `OSS_SESSION_TOKEN`。
+- `role`：使用部署机器绑定的 RAM 角色免密访问。可以配置 `role_name`，不配置时将从 ECS metadata 自动获取角色名称。
 
 ### endpoint [string]
 
